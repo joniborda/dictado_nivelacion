@@ -10,8 +10,7 @@ public class Palabra {
 
 	public int resolver() {
 		String aux = this.palabra;
-		
-		aux.concat(this.palabra.substring(0, 1));
+		aux = aux.concat(this.palabra.substring(0, 1));
 		
 		if (this.isPalindromo(aux)) {
 			return 1;
@@ -22,9 +21,8 @@ public class Palabra {
 	
 	public boolean isPalindromo(String string) {
 		
-		// todavia no funciona
 		for (int i = 0; i < string.length()/2; i++) {
-			if (string.substring(i, 1) != string.substring(string.length()-i-1, 1)) {
+			if (!string.substring(i, i+1).equals(string.substring(string.length()-i-1, string.length()-i))) {
 				return false;
 			}
 		}
