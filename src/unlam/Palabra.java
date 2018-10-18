@@ -18,30 +18,16 @@ public class Palabra {
 	 * @return Cantidad de letras que tuve que agregar para hacerlo palindromo
 	 */
 	public int resolver() {
-		String aux = this.palabra.concat(this.palabra.substring(0, 1));
+
+		if (this.isPalindromo(this.palabra)) {
+			return 0;
+		}
+
 		// agrego primera letra al final
+		String aux = this.palabra.concat(this.palabra.substring(0, 1));
+
 		if (this.isPalindromo(aux)) {
 			return 1;
-		}
-
-		this.calcularMayorSimetria(aux);
-		int posicionArranque = this.posicionMayorSimetria - this.mayorSimetria;
-		/*
-		 * tengo que poner todas las letras que faltan para llegar a la ultima pero en
-		 * sentido inverso. Ej: mesetam -> matesetam
-		 */
-		String aux2 = null;
-		aux2 = aux.substring(0, posicionArranque + 1);
-		int cantidadLetras = 1;
-		for (int j = aux.length() - 1; j > this.posicionMayorSimetria + this.mayorSimetria; j--) {
-			aux2 = aux2.concat(aux.substring(j - 1, j));
-			cantidadLetras++;
-		}
-
-		aux2 = aux2.concat(aux.substring(1));
-
-		if (this.isPalindromo(aux2)) {
-			return cantidadLetras;
 		}
 
 		// agrego ultima adelante
@@ -51,7 +37,49 @@ public class Palabra {
 			return 1;
 		}
 
+		this.calcularMayorSimetria(this.palabra);
+
+		int cantidadLetras = 0;
+
+		while (!this.isPalindromo(this.palabra)) {
+			aux = this.ponerAlInicioDeLaSimetria(this.posicionMayorSimetria - this.mayorSimetria,
+					this.posicionMayorSimetria + this.mayorSimetria);
+
+			int simetriaAnterior = this.mayorSimetria;
+
+			if (aux != null && this.calcularMayorSimetria(aux) > simetriaAnterior) {
+				cantidadLetras++;
+				if (this.isPalindromo(aux)) {
+					return cantidadLetras;
+				}
+				this.palabra = aux;
+			} else {
+				aux = this.ponerAlFinalDeLaSimetria(this.posicionMayorSimetria + this.mayorSimetria);
+				cantidadLetras++;
+				if (this.isPalindromo(aux)) {
+					return cantidadLetras;
+				}
+				this.palabra = aux;
+			}
+		}
 		return 0;
+	}
+
+	private String ponerAlInicioDeLaSimetria(int posicionArranque, int posicionFinal) {
+		if (posicionFinal < this.palabra.length()) {
+			String aux = this.palabra.substring(0, posicionArranque + 1);
+
+			aux = aux.concat(this.palabra.substring(posicionFinal, posicionFinal + 1));
+			return aux.concat(this.palabra.substring(1));
+		}
+		return null;
+	}
+
+	private String ponerAlFinalDeLaSimetria(int posicionArranque) {
+		String aux = this.palabra.substring(0, posicionArranque);
+		aux = aux.concat(this.palabra.substring(this.posicionMayorSimetria - this.mayorSimetria,
+				this.posicionMayorSimetria - this.mayorSimetria + 1));
+		return aux.concat(this.palabra.substring(posicionArranque));
 	}
 
 	public boolean isPalindromo(String string) {
@@ -76,10 +104,13 @@ public class Palabra {
 		return simetrias;
 	}
 
-	public void calcularMayorSimetria(String aux) {
+	public int calcularMayorSimetria(String aux) {
 		this.mayorSimetria = 0;
 		this.posicionMayorSimetria = 0;
 		int simetria_actual = 0;
+		if (aux == null) {
+			return 0;
+		}
 		for (int i = 1; i < aux.length() - 1; i++) {
 			simetria_actual = this.simetria(aux, i);
 			if (this.mayorSimetria < simetria_actual) {
@@ -87,6 +118,7 @@ public class Palabra {
 				this.posicionMayorSimetria = i;
 			}
 		}
+		return this.mayorSimetria;
 	}
 
 }
